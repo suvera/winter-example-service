@@ -1,0 +1,27 @@
+loggers:
+    myLogger:
+        handlers: [ console ]
+        processors: [ web_processor, pid_processor ]
+formatters:
+    dashed:
+        class: Monolog\Formatter\LineFormatter
+        format: "%datetime% [%extra.process_id%] %channel%.%level_name% - %message%\n"
+handlers:
+    console:
+        class: Monolog\Handler\StreamHandler
+        level: INFO
+        formatter: dashed
+        processors: [ memory_processor ]
+        stream: php://stdout
+    info_file_handler:
+        class: Monolog\Handler\StreamHandler
+        level: INFO
+        formatter: dashed
+        stream: /var/log/example-service.log
+processors:
+    web_processor:
+        class: Monolog\Processor\WebProcessor
+    pid_processor:
+        class: Monolog\Processor\ProcessIdProcessor
+    memory_processor:
+        class: Monolog\Processor\MemoryUsageProcessor

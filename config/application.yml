@@ -1,0 +1,94 @@
+server:
+    port: 8080
+    address: 127.0.0.1
+    context-path: /
+    admin:
+        port: 9091
+        auth:
+            tokenFile:
+    swoole:
+        reactor_num: 4
+        worker_num: 1
+        task_enable_coroutine: true
+        task_use_object: true
+        backlog: 128
+        max_request: 50
+        dispatch_mode: 1
+winter:
+    application:
+        name: Example Micro Service
+        id: example-service
+        version: 1.0.0
+    namespaces:
+        cacheTime: 300
+    route:
+        cacheTime: 300
+    task:
+        async:
+            poolSize: 0
+            queueCapacity: 50
+            argsSize: 2048
+            queueStorageHandler:
+        scheduling:
+            poolSize: 0
+            queueCapacity: 50
+    kv:
+        port: 7880
+        address:
+    queue:
+        port: 7881
+        address:
+    phpBinary:
+myApp:
+    value1: This is string
+    value2: 99
+    value3: true
+    value4: 10.89
+
+datasource:
+    -   name: default
+        url: "sqlite::memory:"
+        username:
+        password:
+        validationQuery: SELECT 'Databse Connected'
+        driverClass: dev\winterframework\pdbc\pdo\PdoDataSource
+        connection:
+            persistent: true
+            errorMode: ERRMODE_EXCEPTION
+            autoCommit: true
+            defaultrowprefetch: 100
+            idleTimeout: 180
+
+modules:
+    -   module: dev\winterframework\data\redis\RedisModule
+        enabled: false
+        configFile: redis-config.yml
+    -   module: dev\winterframework\dtce\DtceModule
+        enabled: true
+        configFile: dtce-config.yml
+
+management:
+    endpoints:
+        enabled: true
+    endpoint:
+        beans:
+            enabled: true
+            path: "monitoring/beans"
+        configprops:
+            enabled: true
+            path: "monitoring/configprops"
+        env:
+            enabled: true
+            path: "monitoring/env"
+        health:
+            enabled: true
+            path: "monitoring/health"
+        info:
+            enabled: true
+            path: "monitoring/info"
+        mappings:
+            enabled: true
+            path: "monitoring/mappings"
+        prometheus:
+            enabled: true
+            path: "monitoring/prometheus"

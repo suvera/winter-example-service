@@ -1,0 +1,11 @@
+tasks:
+    -   name: wordCount
+        storage:
+            handler: dev\winterframework\dtce\task\storage\TaskIOStorageKvStore
+            ttl:
+        worker:
+            total: 4
+            class: dev\example\service\tasks\word\WordCounter
+        queue:
+            handler: dev\winterframework\dtce\task\storage\TaskQueueShared
+            capacity: 100

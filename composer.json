@@ -1,0 +1,31 @@
+{
+    "name": "suvera/winter-example-service",
+    "description": "Example micro-service developed using Winter Boot",
+    "type": "project",
+    "homepage": "https://suvera.github.io/",
+    "config": {
+        "platform": {
+            "php": "8.0"
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Suvera"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "dev\\example\\service\\": "src/"
+        }
+    },
+    "minimum-stability": "dev",
+    "repositories": [
+    ],
+    "require": {
+        "ext-pcntl": "*",
+        "ext-swoole": "*",
+        "suvera/winter-boot": "dev-master",
+        "suvera/winter-modules": "dev-master"
+    }
+}
