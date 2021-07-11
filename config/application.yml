@@ -8,7 +8,7 @@ server:
             tokenFile:
     swoole:
         reactor_num: 4
-        worker_num: 1
+        worker_num: 4
         task_enable_coroutine: true
         task_use_object: true
         backlog: 128
@@ -19,10 +19,6 @@ winter:
         name: Example Micro Service
         id: example-service
         version: 1.0.0
-    namespaces:
-        cacheTime: 300
-    route:
-        cacheTime: 300
     task:
         async:
             poolSize: 0
@@ -39,11 +35,6 @@ winter:
         port: 7881
         address:
     phpBinary:
-myApp:
-    value1: This is string
-    value2: 99
-    value3: true
-    value4: 10.89
 
 datasource:
     -   name: default
@@ -63,6 +54,7 @@ modules:
     -   module: dev\winterframework\data\redis\RedisModule
         enabled: false
         configFile: redis-config.yml
+
     -   module: dev\winterframework\dtce\DtceModule
         enabled: true
         configFile: dtce-config.yml
