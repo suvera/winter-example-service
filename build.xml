@@ -13,8 +13,6 @@
         <format property="build.time" pattern="%Y%m%d%H%M%S"/>
     </tstamp>
 
-    <property name="buildFileName" value="${app.id}-${app.version}-${app.release}"/>
-
     <fileset dir="." id="phpSources" defaultexcludes="true">
         <include name="bin/**"/>
         <include name="src/**"/>
@@ -64,13 +62,18 @@
         <mkdir dir="target/phar"/>
 
         <WinterPhar
-            destfile="target/phar/${buildFileName}.phar"
             basedir="./"
+            topDir="target/phar"
+            name="${app.id}"
+            version="${app.version}"
+            release="${app.release}"
+            summary="${app.summary}"
+            outFileProperty="phar.Filename"
         >
-
             <Stub name="service" scriptPath="bin/example-service.php"/>
 
             <fileset refid="phpSources"/>
+
             <metadata>
                 <element name="version" value="${app.version}"/>
                 <element name="authors">

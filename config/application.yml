@@ -84,3 +84,9 @@ management:
         prometheus:
             enabled: true
             path: "monitoring/prometheus"
+        scheduledtasks:
+            enabled: true
+            path: "monitoring/scheduledtasks"
+        heapdump:
+            enabled: true
+            path: "monitoring/heapdump"
