@@ -13,7 +13,7 @@ composer update
 Build **Phar** binary with phing, run below command
 
 ```shell
-phing clean phar
+./vendor/bin/phing clean phar
 
 php target/phar/example-service-1.0.0-dev.phar -c "$(realpath ./config)"
 ```
