@@ -1,6 +1,6 @@
 server:
     port: 8080
-    address: 127.0.0.1
+    address: 0.0.0.0
     context-path: /
     admin:
         port: 9091
@@ -12,7 +12,6 @@ server:
         task_enable_coroutine: true
         task_use_object: true
         backlog: 128
-        max_request: 50
         dispatch_mode: 1
 winter:
     application:

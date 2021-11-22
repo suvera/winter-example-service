@@ -10,20 +10,31 @@ Update Library dependencies
 composer update
 ```
 
-Build **Phar** binary with phing, run below command
+Use one of the way to start application as listed below
+
+### 1. Build **Phar** binary with phing, and start service
 
 ```shell
 ./vendor/bin/phing clean phar
 
+# Start service
 php target/phar/example-service-1.0.0-dev.phar -c "$(realpath ./config)"
 ```
 
-### OR
-
-just start application by below command
+### 2. (OR) Simply run this command
 
 ```shell
 php bin/example-service.php
+```
+
+### 3. (OR) Using Docker Image
+
+```shell
+# Build Docker Image
+./vendor/bin/phing clean docker
+
+# Start Container, so service starts
+docker run -d -p 8080:8080 --name example-service demoapp/example-service:1.0.0-dev
 ```
 
 ## Test API Calls

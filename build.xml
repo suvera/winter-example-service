@@ -84,4 +84,14 @@
         <echo>PHAR Generated!</echo>
     </target>
 
+    <!-- =========================================================== -->
+    <!-- Target: build Docker Image -->
+    <target name="docker" description="Build Docker Image" depends="phar">
+        <echo>Building Docker Image ...</echo>
+        <exec dir="." executable="docker" level="verbose" checkreturn="true" passthru="true">
+            <arg line="build . -t ${company.id}/${app.id}:${app.version}-${app.release} -f ./Dockerfile"/>
+        </exec>
+        <echo>Docker Image Generated!</echo>
+    </target>
+
 </project>
