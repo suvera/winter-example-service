@@ -1,5 +1,5 @@
 loggers:
-    myLogger:
+    ExApp:
         handlers: [ console ]
         processors: [ web_processor, pid_processor ]
 formatters:

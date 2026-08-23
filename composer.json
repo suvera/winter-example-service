@@ -5,7 +5,7 @@
     "homepage": "https://suvera.github.io/",
     "config": {
         "platform": {
-            "php": "8.0"
+            "php": "8.5"
         }
     },
     "license": "MIT",
@@ -20,12 +20,20 @@
         }
     },
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "repositories": [
+        {
+            "type": "path",
+            "url": "../winter-boot",
+            "options": {
+                "symlink": true
+            }
+        }
     ],
     "require": {
         "ext-pcntl": "*",
         "ext-swoole": "*",
-        "suvera/winter-boot": "dev-master",
+        "suvera/winter-boot": "@dev",
         "suvera/winter-modules": "dev-master"
     }
 }
