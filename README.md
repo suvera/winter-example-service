@@ -12,13 +12,13 @@ composer update
 
 Use one of the way to start application as listed below
 
-### 1. Build **Phar** binary with phing, and start service
+### 1. Build **Phar** binary with box, and start service
 
 ```shell
-./vendor/bin/phing clean phar
+./deploy/build.sh
 
 # Start service
-php target/phar/example-service-1.0.0-dev.phar -c "$(realpath ./config)"
+php target/example-service.phar -c "$(realpath ./config)"
 ```
 
 ### 2. (OR) Simply run this command
@@ -30,11 +30,12 @@ php bin/example-service.php
 ### 3. (OR) Using Docker Image
 
 ```shell
-# Build Docker Image
-./vendor/bin/phing clean docker
+# Build PHAR, then Docker Image
+./deploy/build.sh
+docker build . -t demoapp/example-service:1.0.0 -f ./Dockerfile
 
 # Start Container, so service starts
-docker run -d -p 8080:8080 --name example-service demoapp/example-service:1.0.0-dev
+docker run -d -p 8080:8080 --name example-service demoapp/example-service:1.0.0
 ```
 
 ## Test API Calls
@@ -77,6 +78,49 @@ curl http://127.0.0.1:8080/monitoring/health
 curl http://127.0.0.1:8080/monitoring/info
 
 curl http://127.0.0.1:8080/monitoring/beans
+```
+
+## AOP-Guarded Endpoint
+
+`GET /aop-demo/secure-greeting` is protected by the custom `#[RequireCustomHeader]`
+AOP attribute (`src/aop/RequireCustomHeader.php`, interceptor
+`src/aop/RequireCustomHeaderInterceptor.php`). The interceptor runs before the
+endpoint method and only lets the call through when the request carries the
+header `X-Custom-Foo-Bar: foo-bar`; anything else is denied with `403` without
+the method body executing:
+
+```shell
+# Missing header -> 403 Forbidden
+curl -i http://127.0.0.1:8080/aop-demo/secure-greeting
+
+# Wrong value -> 403 Forbidden
+curl -i -H "X-Custom-Foo-Bar: wrong" http://127.0.0.1:8080/aop-demo/secure-greeting
+
+# Correct value -> 200 OK
+curl -i -H "X-Custom-Foo-Bar: foo-bar" http://127.0.0.1:8080/aop-demo/secure-greeting
+```
+
+Expected `403` body:
+
+```json
+{"success": false, "data": null, "error": "Forbidden: header \"X-Custom-Foo-Bar\" must be \"foo-bar\""}
+```
+
+Expected `200` body:
+
+```json
+{"success": true, "data": "Hello from the AOP-guarded endpoint!"}
+```
+
+To guard another endpoint, add an `HttpRequest` argument to the method and
+annotate it — custom header name/value are optional parameters:
+
+```php
+#[GetMapping(path: "my-secure-route")]
+#[RequireCustomHeader(headerName: "X-Custom-Foo-Bar", expectedValue: "foo-bar")]
+public function myEndpoint(HttpRequest $request): array|ResponseEntity {
+    // ...
+}
 ```
 
 

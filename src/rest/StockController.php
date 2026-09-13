@@ -22,4 +22,9 @@ class StockController {
             'price' => $this->stockService->getPrice($symbol)
         ];
     }
+
+    #[GetMapping(path: "say-hello")]
+    public function sayHello(): string {
+        return "Hello from WinterBoot!" . PHP_EOL;
+    }
 }

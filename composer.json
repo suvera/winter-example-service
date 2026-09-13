@@ -6,6 +6,10 @@
     "config": {
         "platform": {
             "php": "8.5"
+        },
+        "allow-plugins": {
+            "php-http/discovery": true,
+            "tbachert/spi": true
         }
     },
     "license": "MIT",
@@ -28,12 +32,19 @@
             "options": {
                 "symlink": true
             }
+        },
+        {
+            "type": "path",
+            "url": "../winter-modules",
+            "options": {
+                "symlink": true
+            }
         }
     ],
     "require": {
         "ext-pcntl": "*",
         "ext-swoole": "*",
         "suvera/winter-boot": "@dev",
-        "suvera/winter-modules": "dev-master"
+        "suvera/winter-modules": "@dev"
     }
 }

@@ -1,0 +1,24 @@
+{
+    "base-path": "stage",
+    "main": "bin/example-service.php",
+    "output": "../target/example-service.phar",
+    "stub": true,
+    "alias": "example-service.phar",
+    "shebang": "#!/usr/bin/env php",
+    "intercept": false,
+    "banner": "Example Micro Service",
+    "chmod": "0644",
+    "check-requirements": true,
+    "directories": [
+        "bin",
+        "src",
+        "vendor"
+    ],
+    "blacklist": [
+        "srcTests"
+    ],
+    "exclude-composer-files": true,
+    "exclude-dev-files": true,
+    "dump-autoload": true,
+    "compression": "NONE"
+}
