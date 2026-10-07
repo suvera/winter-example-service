@@ -13,6 +13,8 @@ server:
         task_use_object: true
         backlog: 128
         dispatch_mode: 1
+        # Max HTTP request size (Swoole default is 2 MB); test-perf.sh sends up to 4 MB
+        package_max_length: 8388608
 winter:
     application:
         name: Example Micro Service

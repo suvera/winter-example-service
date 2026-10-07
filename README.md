@@ -124,4 +124,26 @@ public function myEndpoint(HttpRequest $request): array|ResponseEntity {
 ```
 
 
+## Performance / Memory-Leak Test
+
+`./test-perf.sh` starts the service and sends batches of large JSON payloads
+(16 KB to 4 MB by default) concurrently to `POST /perf/payload`, which decodes,
+aggregates and re-encodes them, and returns a checksum plus the worker's memory figures.
+After every batch it reads each worker's memory after a forced GC
+(`GET /perf/stats?gc=1`) and the RSS of the whole server process tree.
+
+It prints throughput and latency (min/avg/p50/p95/p99/max per size), memory for
+each worker, and flags anomalies: errors or corrupted payloads, leaks (post-GC memory
+rising batch after batch), RSS growth, worker restarts, latency degradation, tail
+latency, oversized-request handling, errors in the app log, and processes that
+survive a graceful shutdown. It exits non-zero on failures (`STRICT=1` also fails on warnings).
+
+```shell
+./test-perf.sh
+BATCHES=20 REQS_PER_BATCH=100 CONCURRENCY=8 SIZES_KB="64 2048" ./test-perf.sh
+```
+
+All tunables are listed at the top of the script. `server.swoole.package_max_length`
+is raised to 8 MB in `config/application.yml` (Swoole's default is 2 MB).
+
 Even more things can be done with **[winter-modules](https://github.com/suvera/winter-modules)**.  Apache Kafka, Redis, S3 etc...

@@ -13,6 +13,29 @@ else
 fi
 echo "OK: Dependencies installed"
 
+# Stops the app and its child servers (kv-server, queue-server), then
+# waits 3s and verifies nothing is left running.
+SERVICE_PROCS='bin/example-service.php|bin/kv-server.php|bin/queue-server.php'
+stop_app() {
+    kill $APP_PID 2>/dev/null || true
+    wait $APP_PID 2>/dev/null || true
+    killall php 2>/dev/null || true
+    sleep 3
+    if pgrep -f "$SERVICE_PROCS" > /dev/null; then
+        echo "FAIL: Processes still running 3s after killall php:"
+        pgrep -af "$SERVICE_PROCS"
+        echo "Force killing them (SIGKILL)..."
+        pkill -9 -f "$SERVICE_PROCS" || true
+        sleep 1
+        if pgrep -f "$SERVICE_PROCS" > /dev/null; then
+            echo "FAIL: Processes survived SIGKILL:"
+            pgrep -af "$SERVICE_PROCS"
+        fi
+        return 1
+    fi
+    echo "OK: All service processes stopped"
+}
+
 # Start the application in the background (logs will appear on console)
 echo "Starting Winter Boot application (logs will be shown directly)..."
 php bin/example-service.php &
@@ -34,9 +57,7 @@ done
 
 if ! curl -s -f http://localhost:8080/monitoring/health > /dev/null; then
     echo "ERROR: Application did not start properly"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
-    killall php
+    stop_app
     exit 1
 fi
 
@@ -54,9 +75,7 @@ if echo "$response" | grep -q 'Hello from WinterBoot!'; then
 else
     echo "FAIL: Say hello failed"
     echo "Response: $response"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
-    killall php
+    stop_app
     exit 1
 fi
 
@@ -68,9 +87,7 @@ if echo "$response" | grep -q '"success".*true'; then
 else
     echo "FAIL: Failed to store key value"
     echo "Response: $response"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
-    killall php
+    stop_app
     exit 1
 fi
 
@@ -82,8 +99,7 @@ if echo "$response" | grep -q '"success".*true' && echo "$response" | grep -q "$
 else
     echo "FAIL: Failed to retrieve key value or content mismatch"
     echo "Response: $response"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
+    stop_app
     exit 1
 fi
 
@@ -95,9 +111,7 @@ if echo "$response" | grep -q '"symbol".*AAPL' && echo "$response" | grep -q '"p
 else
     echo "FAIL: Failed to retrieve stock price"
     echo "Response: $response"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
-    killall php
+    stop_app
     exit 1
 fi
 
@@ -108,9 +122,7 @@ if [ -n "$response" ]; then
     echo "OK: Monitoring health responded"
 else
     echo "FAIL: Monitoring health returned empty response"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
-    killall php
+    stop_app
     exit 1
 fi
 
@@ -121,9 +133,7 @@ if [ -n "$response" ]; then
     echo "OK: Monitoring info responded"
 else
     echo "FAIL: Monitoring info returned empty response"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
-    killall php
+    stop_app
     exit 1
 fi
 
@@ -134,9 +144,7 @@ if [ "$HTTP_CODE" -eq 403 ]; then
     echo "OK: Request without header denied with 403"
 else
     echo "FAIL: Expected 403 without header, got HTTP $HTTP_CODE"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
-    killall php
+    stop_app
     exit 1
 fi
 
@@ -147,9 +155,7 @@ if [ "$HTTP_CODE" -eq 403 ]; then
     echo "OK: Request with wrong header denied with 403"
 else
     echo "FAIL: Expected 403 with wrong header, got HTTP $HTTP_CODE"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
-    killall php
+    stop_app
     exit 1
 fi
 
@@ -161,9 +167,7 @@ if echo "$response" | grep -q '"success".*true' && echo "$response" | grep -q 'H
 else
     echo "FAIL: Request with correct header failed"
     echo "Response: $response"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
-    killall php
+    stop_app
     exit 1
 fi
 
@@ -174,9 +178,7 @@ if [ "$HTTP_CODE" -eq 200 ]; then
     echo "OK: Async crawl request accepted"
 else
     echo "FAIL: Async crawl failed with HTTP $HTTP_CODE"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
-    killall php
+    stop_app
     exit 1
 fi
 
@@ -187,9 +189,7 @@ if [ "$HTTP_CODE" -eq 200 ]; then
     echo "OK: Distributed job request accepted"
 else
     echo "FAIL: Distributed job failed with HTTP $HTTP_CODE"
-    kill $APP_PID 2>/dev/null || true
-    wait $APP_PID 2>/dev/null || true
-    killall php
+    stop_app
     exit 1
 fi
 
@@ -215,9 +215,9 @@ else
 fi
 
 # Stop the application
-kill $APP_PID 2>/dev/null || true
-wait $APP_PID 2>/dev/null || true
-killall php
+if ! stop_app; then
+    exit 1
+fi
 
 echo ""
 echo "Test completed successfully!"
